@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: expense-service
+  datasource:
+    url: 'jdbc:mysql://localhost:3307/expense_db'
+    username: admin
+    password: 123
+    driver-class-name: com.mysql.cj.jdbc.NonRegisteringDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
