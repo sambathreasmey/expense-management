@@ -1,5 +1,6 @@
 package com.development.expense.controller;
 
+import com.development.expense.dto.ApiResponse;
 import com.development.expense.dto.CategoryDto;
 import com.development.expense.entity.CategoryEntity;
 import com.development.expense.service.CategoryService;
@@ -16,12 +17,12 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("")
-    public ResponseEntity<List<CategoryDto>> categories(){
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public ResponseEntity<ApiResponse> categories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(categoryService.getAllCategories(page, size));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryEntity> findById(@PathVariable Long id){
+    public ResponseEntity<ApiResponse> findById(@PathVariable Long id){
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
