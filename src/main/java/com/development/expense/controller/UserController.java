@@ -2,6 +2,7 @@ package com.development.expense.controller;
 
 import com.development.expense.dto.ApiResponse;
 import com.development.expense.dto.ForgotPasswordDto;
+import com.development.expense.dto.ForgotPasswordVerifyDto;
 import com.development.expense.dto.UserDto;
 import com.development.expense.entity.UserEntity;
 import com.development.expense.service.UserService;
@@ -47,5 +48,10 @@ public class UserController {
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto){
         return new ResponseEntity<>(userService.forgotPassword(forgotPasswordDto), HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot-password-verify")
+    public ResponseEntity<ApiResponse> forgotPasswordVerify(@RequestBody ForgotPasswordVerifyDto request){
+        return new ResponseEntity<>(userService.forgotPasswordVerify(request), HttpStatus.OK);
     }
 }

@@ -4,6 +4,7 @@ import com.development.expense.constant.CodeConstant;
 import com.development.expense.constant.MessageConstant;
 import com.development.expense.dto.ApiResponse;
 import com.development.expense.dto.ForgotPasswordDto;
+import com.development.expense.dto.ForgotPasswordVerifyDto;
 import com.development.expense.dto.UserDto;
 import com.development.expense.entity.UserEntity;
 import com.development.expense.repository.UserRepository;
@@ -137,5 +138,41 @@ public class UserService {
         find.setExpiration(new Timestamp(System.currentTimeMillis() + 120000));
         userRepository.save(find);
         return verificationService.sendOTP(sendOTPRequest);
+    }
+
+    public ApiResponse forgotPasswordVerify(ForgotPasswordVerifyDto request) {
+        ApiResponse apiResponse = new ApiResponse();
+        UserEntity find = userRepository.findUserEntityByUsername(request.username());
+        if (find == null) {
+            apiResponse.setCode(CodeConstant.NOT_FOUND);
+            apiResponse.setMessage(MessageConstant.NOT_FOUND);
+            return apiResponse;
+        }
+        if (find.getTelegramChatId() == null) {
+            apiResponse.setCode(CodeConstant.NOT_FOUND);
+            apiResponse.setMessage("telegram chat not found");
+            return apiResponse;
+        }
+        if (find.getOneTimePassword() == null) {
+            apiResponse.setCode(CodeConstant.NOT_FOUND);
+            apiResponse.setMessage(MessageConstant.NOT_FOUND);
+            return apiResponse;
+        }
+        if (!find.getOneTimePassword().equals(request.otp())) {
+            apiResponse.setCode(CodeConstant.INVALID);
+            apiResponse.setMessage("Wrong one-time password");
+            return apiResponse;
+        }
+        if (find.getExpiration().getTime() < System.currentTimeMillis()) {
+            apiResponse.setCode(CodeConstant.INVALID);
+            apiResponse.setMessage("Expired one-time password");
+            return apiResponse;
+        }
+        find.setExpiration(new Timestamp(System.currentTimeMillis()));
+        userRepository.save(find);
+        apiResponse.setCode(CodeConstant.SUCCESS);
+        apiResponse.setMessage(MessageConstant.SUCCESS);
+        apiResponse.setData(find.getPassword());
+        return apiResponse;
     }
 }
