@@ -1,5 +1,7 @@
 package com.development.expense.controller;
 
+import com.development.expense.dto.ApiResponse;
+import com.development.expense.dto.ForgotPasswordDto;
 import com.development.expense.dto.UserDto;
 import com.development.expense.entity.UserEntity;
 import com.development.expense.service.UserService;
@@ -40,5 +42,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto){
+        return new ResponseEntity<>(userService.forgotPassword(forgotPasswordDto), HttpStatus.OK);
     }
 }

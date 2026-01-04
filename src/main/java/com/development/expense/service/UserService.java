@@ -1,18 +1,26 @@
 package com.development.expense.service;
 
+import com.development.expense.constant.CodeConstant;
+import com.development.expense.constant.MessageConstant;
+import com.development.expense.dto.ApiResponse;
+import com.development.expense.dto.ForgotPasswordDto;
 import com.development.expense.dto.UserDto;
 import com.development.expense.entity.UserEntity;
 import com.development.expense.repository.UserRepository;
+import com.development.expense.rest.dto.SendOTPRequest;
+import com.development.expense.util.GlobalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final VerificationService verificationService;
 
     public List<UserEntity> findAll() {
         return userRepository.findAll();
@@ -91,6 +99,9 @@ public class UserService {
         if (userDto.status() != null) {
             find.setStatus(userDto.status());
         }
+        if (userDto.telegramChatId() != null) {
+            find.setTelegramChatId(userDto.telegramChatId());
+        }
         find.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         userRepository.save(find);
         return "update success";
@@ -103,5 +114,28 @@ public class UserService {
         }
         userRepository.delete(find);
         return "delete success";
+    }
+
+    public ApiResponse forgotPassword(ForgotPasswordDto forgotPasswordDto) {
+        ApiResponse apiResponse = new ApiResponse();
+        UserEntity find = userRepository.findUserEntityByUsername(forgotPasswordDto.username());
+        if (find == null) {
+            apiResponse.setCode(CodeConstant.NOT_FOUND);
+            apiResponse.setMessage(MessageConstant.NOT_FOUND);
+            return apiResponse;
+        }
+        if (find.getTelegramChatId() == null) {
+            apiResponse.setCode(CodeConstant.NOT_FOUND);
+            apiResponse.setMessage("telegram chat not found");
+            return apiResponse;
+        }
+        SendOTPRequest sendOTPRequest = new SendOTPRequest();
+        sendOTPRequest.setChatId(find.getTelegramChatId());
+        String otp = GlobalUtil.generateOTP(6);
+        sendOTPRequest.setOtp(otp);
+        find.setOneTimePassword(otp);
+        find.setExpiration(new Timestamp(System.currentTimeMillis() + 120000));
+        userRepository.save(find);
+        return verificationService.sendOTP(sendOTPRequest);
     }
 }

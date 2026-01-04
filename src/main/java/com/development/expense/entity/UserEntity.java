@@ -24,6 +24,9 @@ public class UserEntity {
     private String password;
     private RoleEnum role;
     private StatusEnum status;
+    private Long telegramChatId;
+    private String oneTimePassword;
+    private Timestamp expiration;
     @Column(name = "created_at")
     private Timestamp createdAt;
     @Column(name = "updated_at")

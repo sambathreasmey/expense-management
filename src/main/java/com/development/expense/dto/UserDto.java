@@ -7,6 +7,7 @@ public record UserDto(
     @JsonProperty(value = "full_name")
     String fullName,
     String username,
-    StatusEnum status
+    StatusEnum status,
+    Long telegramChatId
 ) {
 }

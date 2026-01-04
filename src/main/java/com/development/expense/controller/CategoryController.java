@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
@@ -17,7 +18,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse> categories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<ApiResponse> categories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) throws InterruptedException {
+        Thread.sleep(3000);
         return ResponseEntity.ok(categoryService.getAllCategories(page, size));
     }
 

@@ -6,6 +6,9 @@ import com.development.expense.enums.StatusEnum;
 import com.development.expense.repository.CategoryRepository;
 import com.development.expense.repository.ExpenseRepository;
 import com.development.expense.repository.UserRepository;
+import com.development.expense.rest.TelegramClient;
+import com.development.expense.rest.dto.SendBookingNotificationRequest;
+import com.development.expense.util.GlobalUtil;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -17,12 +20,14 @@ public class ExpenseService {
     final ExpenseRepository expenseRepository;
     final UserRepository userRepository;
     final CategoryRepository categoryRepository;
+    final TelegramClient telegramClient;
     public ExpenseService(ExpenseRepository expenseRepository,
                           UserRepository userRepository,
-                          CategoryRepository categoryRepository) {
+                          CategoryRepository categoryRepository, TelegramClient telegramClient) {
         this.expenseRepository = expenseRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.telegramClient = telegramClient;
     }
 
     public String bookingExpense(BookingExpenseDto bookingExpenseDto) {
@@ -51,7 +56,22 @@ public class ExpenseService {
 
         expenseEntity.setStatus(StatusEnum.ACTIVE);
         expenseEntity.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        expenseRepository.save(expenseEntity);
+        var bookingData = expenseRepository.saveAndFlush(expenseEntity);
+
+        // call to expense-notification service
+        if (findUser.get().getTelegramChatId() != null) {
+            new Thread(() -> {
+                SendBookingNotificationRequest notificationRequest = new SendBookingNotificationRequest();
+                notificationRequest.setTitle(bookingData.getTitle());
+                notificationRequest.setChatId(findUser.get().getTelegramChatId());
+                notificationRequest.setBookingDate(GlobalUtil.formatTimestamp(bookingData.getCreatedAt()));
+                notificationRequest.setFullName(findUser.get().getFullName());
+                notificationRequest.setAmount(GlobalUtil.formatAmount(bookingData.getAmount(), bookingData.getCurrency().name()));
+                notificationRequest.setCategoryName(findCategory.get().getName());
+                telegramClient.sendBookingNotification(notificationRequest);
+            }).start();
+        }
+
         return "booking success";
     }
 
