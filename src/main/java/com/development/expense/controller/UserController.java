@@ -1,9 +1,6 @@
 package com.development.expense.controller;
 
-import com.development.expense.dto.ApiResponse;
-import com.development.expense.dto.ForgotPasswordDto;
-import com.development.expense.dto.ForgotPasswordVerifyDto;
-import com.development.expense.dto.UserDto;
+import com.development.expense.dto.*;
 import com.development.expense.entity.UserEntity;
 import com.development.expense.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +50,15 @@ public class UserController {
     @PostMapping("/forgot-password-verify")
     public ResponseEntity<ApiResponse> forgotPasswordVerify(@RequestBody ForgotPasswordVerifyDto request){
         return new ResponseEntity<>(userService.forgotPasswordVerify(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse> changePassword(@RequestBody ChangePasswordDto request){
+        return new ResponseEntity<>(userService.changePassword(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/change-password-verify")
+    public ResponseEntity<ApiResponse> changePasswordVerify(@RequestBody ChangePasswordVerifyDto request){
+        return new ResponseEntity<>(userService.changePasswordVerify(request), HttpStatus.OK);
     }
 }

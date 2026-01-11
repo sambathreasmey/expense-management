@@ -22,6 +22,7 @@ public class UserEntity {
     private String fullName;
     private String username;
     private String password;
+    private String newPassword;
     private RoleEnum role;
     private StatusEnum status;
     private Long telegramChatId;
