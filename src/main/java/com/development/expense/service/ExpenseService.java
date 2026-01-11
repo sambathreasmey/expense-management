@@ -76,12 +76,12 @@ public class ExpenseService {
         return "booking success";
     }
 
-    public List<ExpenseEntity> getAll() {
+    public ApiResponse getAll() {
         var data = expenseRepository.findAll();
         if(data.isEmpty()) {
-            return new ArrayList<>();
+            return new ApiResponse(CodeConstant.NOT_FOUND, MessageConstant.NOT_FOUND);
         }
-        return data;
+        return new ApiResponse(CodeConstant.SUCCESS, MessageConstant.SUCCESS, data);
     }
 
     public ApiResponse update(Long id, UpdateExpenseDto request) {

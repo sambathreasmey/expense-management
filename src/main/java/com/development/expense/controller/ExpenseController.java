@@ -27,7 +27,7 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpenseEntity>> getAllExpenses() {
+    public ResponseEntity<ApiResponse> getAllExpenses() {
         return new ResponseEntity<>(expenseService.getAll(), HttpStatus.OK);
     }
 

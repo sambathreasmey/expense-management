@@ -1,32 +1,29 @@
 package com.development.expense.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class ApiResponse {
 
     private int code;
     private String message;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Object data;
 
-    public int getCode() {
-        return code;
-    }
+    public ApiResponse() {}
 
-    public void setCode(int code) {
+    public ApiResponse(int code, String message, Object data) {
         this.code = code;
+        this.message = message;
+        this.data = data;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
+    public ApiResponse(int code, String message) {
+        this.code = code;
         this.message = message;
     }
 
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
 }
