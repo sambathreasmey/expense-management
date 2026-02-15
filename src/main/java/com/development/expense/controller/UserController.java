@@ -14,6 +14,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
     private final UserService userService;
 
@@ -28,8 +29,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserEntity userEntity){
-        return new ResponseEntity<>(userService.login(userEntity), HttpStatus.OK);
+    public ResponseEntity<ApiResponse> login(@RequestBody UserEntity userEntity){
+        return ResponseEntity.ok(userService.login(userEntity));
     }
 
     @PutMapping("/{id}")

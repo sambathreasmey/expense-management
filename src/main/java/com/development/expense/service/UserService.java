@@ -59,27 +59,32 @@ public class UserService {
         return "inserted";
     }
 
-    public String login(UserEntity userEntity) {
+    public ApiResponse login(UserEntity userEntity) {
         if (userEntity.getUsername().isBlank()) {
-            return "username is required";
+            return new ApiResponse(CodeConstant.REQUIRED, MessageConstant.BAD_REQUEST);
         }
         if (userEntity.getPassword().isBlank()) {
-            return "password is required";
+            return new ApiResponse(CodeConstant.REQUIRED, MessageConstant.BAD_REQUEST);
         }
         if (userEntity.getUsername().contains(" ") || userEntity.getPassword().contains(" ")) {
-            return "username or password contains whitespace";
+            return new ApiResponse(CodeConstant.REQUIRED, "username or password contains whitespace");
         }
         UserEntity findUser = userRepository.findUserEntityByUsername(userEntity.getUsername());
         if (findUser == null) {
-            return "username or password is incorrect";
+            return new ApiResponse(CodeConstant.NOT_FOUND, MessageConstant.NOT_FOUND);
         }
         if (!findUser.getUsername().equals(userEntity.getUsername())) {
-            return "username is incorrect";
+            return new ApiResponse(CodeConstant.INVALID, "username is incorrect");
         }
         if (!findUser.getPassword().equals(userEntity.getPassword())) {
-            return "password is incorrect";
+            return new ApiResponse(CodeConstant.INVALID, "password is incorrect");
         }
-        return "logged in";
+        var userResponse = new UserLoginResponse(
+                findUser.getId(),
+                findUser.getUsername(),
+                findUser.getFullName()
+        );
+        return new ApiResponse(CodeConstant.SUCCESS, MessageConstant.SUCCESS, userResponse);
     }
 
     public String update(Long id, UserDto userDto) {
