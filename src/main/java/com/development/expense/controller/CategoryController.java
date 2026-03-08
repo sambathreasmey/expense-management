@@ -13,9 +13,12 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/categories")
-@RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping("")
     public ResponseEntity<ApiResponse> categories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) throws InterruptedException {
